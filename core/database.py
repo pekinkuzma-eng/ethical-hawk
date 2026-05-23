@@ -1,7 +1,9 @@
-import os
 import sqlite3
+import os
+
 from config import DATABASE_PATH
 
+os.makedirs("database", exist_ok=True)
 
 class Database:
 

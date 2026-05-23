@@ -1,0 +1,9 @@
+INTERFACE = "eth0"
+
+MAX_REQUESTS_PER_MINUTE = 30
+
+BLOCK_SUSPICIOUS_IP = True
+
+LOG_FILE = "logs/attacks.log"
+
+DATABASE_PATH = "database/attacks.db"

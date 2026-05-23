@@ -1,0 +1,17 @@
+{
+  "sql_injection": [
+    "' OR 1=1",
+    "UNION SELECT",
+    "DROP TABLE",
+    "--",
+    " OR "
+  ],
+
+  "xss": [
+    "<script>",
+    "alert(",
+    "onerror=",
+    "onload=",
+    "javascript:"
+  ]
+}

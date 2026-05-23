@@ -1,9 +1,6 @@
 import sqlite3
-import os
-
 from config import DATABASE_PATH
 
-os.makedirs("database", exist_ok=True)
 
 class Database:
 
@@ -30,20 +27,13 @@ class Database:
     def save_attack(self, timestamp, ip, attack_type, payload, status):
         self.cursor.execute(
             """
-            INSERT INTO attacks (
-                timestamp,
-                ip,
-                attack_type,
-                payload,
-                status
-            )
+            INSERT INTO attacks (timestamp, ip, attack_type, payload, status)
             VALUES (?, ?, ?, ?, ?)
             """,
             (timestamp, ip, attack_type, payload, status)
         )
-
         self.connection.commit()
 
     def get_attacks(self):
-        self.cursor.execute("SELECT * FROM attacks")
+        self.cursor.execute("SELECT * FROM attacks ORDER BY id DESC")
         return self.cursor.fetchall()

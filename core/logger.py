@@ -1,11 +1,5 @@
 import logging
-import os
-
 from config import LOG_FILE
-
-
-os.makedirs("logs", exist_ok=True)
-
 
 logging.basicConfig(
     filename=LOG_FILE,

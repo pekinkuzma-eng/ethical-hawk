@@ -1,43 +1,24 @@
 import subprocess
 import shutil
 
+blocked_ips = set()
 
-class Firewall:
 
-    @staticmethod
-    def block_ip(ip):
-
-        if not shutil.which("iptables"):
-
-            print(
-                "[WARNING] iptables not installed. "
-                f"IP {ip} was not blocked."
-            )
-
-            return False
-
-        try:
-
-            subprocess.run(
-                [
-                    "sudo",
-                    "iptables",
-                    "-A",
-                    "INPUT",
-                    "-s",
-                    ip,
-                    "-j",
-                    "DROP"
-                ],
-                check=True
-            )
-
-            print(f"[FIREWALL] IP blocked: {ip}")
-
-            return True
-
-        except Exception as error:
-
-            print(f"[FIREWALL ERROR] {error}")
-
-            return False
+def block_ip(ip):
+    if ip in blocked_ips:
+        return
+    
+    # Проверяем, существует ли iptables
+    if not shutil.which("iptables"):
+        print(f"[FIREWALL] iptables not installed, skipping block for {ip}")
+        return
+    
+    try:
+        subprocess.run(
+            ["sudo", "iptables", "-A", "INPUT", "-s", ip, "-j", "DROP"],
+            check=True
+        )
+        blocked_ips.add(ip)
+        print(f"[FIREWALL] IP blocked: {ip}")
+    except Exception as error:
+        print(f"Firewall error: {error}")

@@ -4,9 +4,9 @@
     "UNION SELECT",
     "DROP TABLE",
     "--",
-    " OR "
+    " OR ",
+    "1=1"
   ],
-
   "xss": [
     "<script>",
     "alert(",

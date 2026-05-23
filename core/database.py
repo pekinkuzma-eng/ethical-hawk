@@ -2,7 +2,7 @@ import sqlite3
 import os
 from config import DATABASE_PATH
 
-# Создаем папку для БД, если её нет
+# Создаем папку ПЕРВЫМ ДЕЛОМ
 os.makedirs(os.path.dirname(DATABASE_PATH), exist_ok=True)
 
 

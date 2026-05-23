@@ -2,7 +2,6 @@ import json
 from collections import defaultdict
 
 from core.firewall import block_ip
-from core.logger import log_attack
 from core.utils import get_timestamp
 from core.database import Database
 
@@ -36,6 +35,8 @@ class Detector:
         return False
 
     def process_attack(self, ip, payload, attack_type):
+        from core.logger import log_attack  # Импорт ВНУТРИ метода!
+        
         timestamp = get_timestamp()
         status = "DETECTED"
 

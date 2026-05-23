@@ -1,8 +1,8 @@
-import logging
 import os
+import logging
 from config import LOG_FILE
 
-# Создаем папку для логов, если её нет
+# Создаем папку ПЕРВЫМ ДЕЛОМ при импорте
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 
 logging.basicConfig(

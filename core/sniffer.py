@@ -1,5 +1,5 @@
 from scapy.all import sniff
-from scapy.layers.inet import IP
+from scapy.layers.inet import IP, TCP
 from scapy.packet import Raw
 
 from core.detector import Detector
@@ -15,11 +15,14 @@ class Sniffer:
 
         try:
 
-            if packet.haslayer(IP):
+            if (
+                packet.haslayer(IP)
+                and packet.haslayer(TCP)
+            ):
 
                 source_ip = packet[IP].src
 
-                # Фильтрация multicast/broadcast
+                # multicast filter
                 if (
                     source_ip.startswith("239.")
                     or source_ip.startswith("224.")
@@ -34,41 +37,51 @@ class Sniffer:
                         errors="ignore"
                     )
 
-                    # Игнорируем SSDP/UPnP шум
+                    # ignore SSDP
                     if "NOTIFY" in payload:
                         return
 
-                print(
-                    f"[PACKET] "
-                    f"{source_ip} -> {payload[:100]}"
-                )
+                    # показываем только HTTP-like payload
+                    if (
+                        "GET" in payload
+                        or "POST" in payload
+                        or "HTTP" in payload
+                    ):
 
-                # SQL Injection detection
-                if detector.detect_sql_injection(payload):
+                        print(
+                            f"[HTTP PACKET] "
+                            f"{source_ip} -> "
+                            f"{payload[:200]}"
+                        )
 
-                    detector.process_attack(
-                        source_ip,
-                        payload,
-                        "SQL Injection"
-                    )
+                    # SQLi
+                    if detector.detect_sql_injection(payload):
 
-                # XSS detection
-                elif detector.detect_xss(payload):
+                        detector.process_attack(
+                            source_ip,
+                            payload,
+                            "SQL Injection"
+                        )
 
-                    detector.process_attack(
-                        source_ip,
-                        payload,
-                        "XSS Attack"
-                    )
+                    # XSS
+                    elif detector.detect_xss(payload):
 
-                # Brute-force detection
-                elif detector.detect_bruteforce(source_ip):
+                        detector.process_attack(
+                            source_ip,
+                            payload,
+                            "XSS Attack"
+                        )
 
-                    detector.process_attack(
-                        source_ip,
-                        payload,
-                        "Brute Force"
-                    )
+                    # brute-force
+                    elif detector.detect_bruteforce(
+                        source_ip
+                    ):
+
+                        detector.process_attack(
+                            source_ip,
+                            payload,
+                            "Brute Force"
+                        )
 
         except Exception as error:
 
@@ -84,6 +97,7 @@ class Sniffer:
 
         sniff(
             iface=INTERFACE,
+            filter="tcp port 80",
             prn=self.process_packet,
             store=False
         )
